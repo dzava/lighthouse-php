@@ -1,0 +1,32 @@
+{
+    "name": "dzava/lighthouse",
+    "description": "Interface for the Google Lighthouse project",
+    "keywords": [
+        "lighthouse"
+    ],
+    "homepage": "https://github.com/dzava/lighthouse-php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dimitris Zavantias",
+            "email": "dzavantias@gmail.com"
+        }
+    ],
+    "require": {
+		"php": ">=5.5",
+        "symfony/process": "^4.0"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "^6.1|^7.0"
+    },
+	"autoload": {
+        "psr-4": {
+            "Dzava\\Lighthouse\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dzava\\Lighthouse\\Test\\": "tests/"
+        }
+    }
+}

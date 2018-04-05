@@ -1,0 +1,9 @@
+vendor/
+composer.lock
+node_modules
+package.json
+yarn.lock
+config.js
+report.json
+.DS_Store
+.idea

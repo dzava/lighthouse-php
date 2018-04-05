@@ -1,0 +1,16 @@
+<phpunit 	bootstrap="vendor/autoload.php"			
+			colors="true"
+			convertErrorsToExceptions="true"
+			convertNoticesToExceptions="true"
+			convertWarningsToExceptions="true"
+            defaultTestSuite="Unit"
+			stopOnFailure="true">
+			<testsuites>
+				<testsuite name="Unit">
+					<directory>tests/Unit</directory>
+				</testsuite>
+                <testsuite name="Integration">
+					<directory>tests/Integration</directory>
+				</testsuite>
+			</testsuites>
+</phpunit>
