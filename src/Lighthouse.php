@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 class Lighthouse
 {
     protected $timeout = 60;
-    protected $nodeBinary = 'node';
+    protected $nodeBinary = null;
     protected $configPath = null;
     /** @var resource $config */
     protected $config = null;
@@ -254,7 +254,7 @@ class Lighthouse
             $url,
         ], $this->processOptions());
 
-        return escapeshellcmd(implode(' ', $command));
+        return escapeshellcmd(trim(implode(' ', $command)));
     }
 
     /**

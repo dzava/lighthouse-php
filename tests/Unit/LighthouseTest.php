@@ -14,7 +14,7 @@ class LighthouseTest extends TestCase
     {
         parent::setUp();
 
-        $this->lighthouse = (new Lighthouse())->setLighthousePath('./node_modules/lighthouse/lighthouse-cli/index.js');
+        $this->lighthouse = new Lighthouse();
     }
 
     /** @test */
@@ -25,8 +25,7 @@ class LighthouseTest extends TestCase
             ->getCommand('http://example.com');
 
         $this->assertEquals(implode(' ', [
-            'node',
-            './node_modules/lighthouse/lighthouse-cli/index.js',
+            'lighthouse',
             '--quiet',
             '--output=json',
             "--config-path=/my/config",
