@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 class Lighthouse
 {
     protected $timeout = 60;
-    protected $nodeBinary = null;
+    protected $nodePath = null;
     protected $configPath = null;
     /** @var resource $config */
     protected $config = null;
@@ -156,9 +156,9 @@ class Lighthouse
      * @param string $path
      * @return $this
      */
-    public function setNodeBinary($path)
+    public function setNodePath($path)
     {
-        $this->nodeBinary = $path;
+        $this->nodePath = $path;
 
         return $this;
     }
@@ -246,7 +246,7 @@ class Lighthouse
         }
 
         $command = array_merge([
-            $this->nodeBinary,
+            $this->nodePath,
             $this->lighthousePath,
             '--quiet',
             '--output=json',

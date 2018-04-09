@@ -37,7 +37,7 @@ class LighthouseTest extends TestCase
     /** @test */
     public function can_set_a_custom_node_binary()
     {
-        $this->lighthouse->setNodeBinary('/my/node/binary');
+        $this->lighthouse->setNodePath('/my/node/binary');
 
         $command = $this->lighthouse->getCommand('http://example.com');
 
