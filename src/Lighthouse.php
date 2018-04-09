@@ -9,10 +9,11 @@ class Lighthouse
 {
     protected $timeout = 60;
     protected $nodePath = null;
+    protected $chromePath = null;
+    protected $lighthousePath = 'lighthouse';
     protected $configPath = null;
     /** @var resource $config */
     protected $config = null;
-    protected $lighthousePath = 'lighthouse';
     protected $categories = [];
     protected $options = [];
 
@@ -175,6 +176,17 @@ class Lighthouse
     }
 
     /**
+     * @param string $path
+     * @return Lighthouse
+     */
+    public function setChromePath($path)
+    {
+        $this->chromePath = "CHROME_PATH=$path";
+
+        return $this;
+    }
+
+    /**
      * Set the flags to pass to the spawned Chrome instance
      *
      * @param array|string $flags
@@ -246,6 +258,7 @@ class Lighthouse
         }
 
         $command = array_merge([
+            $this->chromePath,
             $this->nodePath,
             $this->lighthousePath,
             '--quiet',
@@ -254,7 +267,7 @@ class Lighthouse
             $url,
         ], $this->processOptions());
 
-        return escapeshellcmd(trim(implode(' ', $command)));
+        return escapeshellcmd(implode(' ', array_filter($command)));
     }
 
     /**

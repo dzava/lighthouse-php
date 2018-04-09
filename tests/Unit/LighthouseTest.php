@@ -67,6 +67,16 @@ class LighthouseTest extends TestCase
     }
 
     /** @test */
+    public function can_set_chrome_path()
+    {
+        $this->lighthouse->setChromePath('/chrome');
+
+        $command = $this->lighthouse->getCommand('http://example.com');
+
+        $this->assertContains("CHROME_PATH=/chrome lighthouse", $command);
+    }
+
+    /** @test */
     public function can_set_the_output_file()
     {
         $this->lighthouse->setOutput('/tmp/report.json');
