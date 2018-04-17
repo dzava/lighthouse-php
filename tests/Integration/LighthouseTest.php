@@ -67,6 +67,37 @@ class LighthouseTest extends TestCase
             ->audit('not-a-valid-url');
     }
 
+    /**
+     * @test
+     * @dataProvider fileOutputDataProvider
+     */
+    public function outputs_to_a_file($outputPath, $content)
+    {
+        $this->removeTempFile($outputPath);
+
+        $this->lighthouse
+            ->setOutput($outputPath)
+            ->seo()
+            ->audit('http://example.com');
+
+        $this->assertFileExists($outputPath);
+        $this->assertFileStartsWith($content, $outputPath);
+    }
+
+    /** @test */
+    public function outputs_both_json_and_html_reports_at_the_same_time()
+    {
+        $this->removeTempFile('/tmp/example.report.json')->removeTempFile('/tmp/example.report.html');
+
+        $this->lighthouse
+            ->setOutput('/tmp/example', ['json', 'html'])
+            ->seo()
+            ->audit('http://example.com');
+
+        $this->assertFileExists('/tmp/example.report.html');
+        $this->assertFileExists('/tmp/example.report.json');
+    }
+
     protected function assertReportIncludesCategory($report, $expectedCategory)
     {
         $report = json_decode($report, true);
@@ -91,5 +122,33 @@ class LighthouseTest extends TestCase
         }, $report['reportCategories']);
 
         $this->assertNotContains($expectedCategory, $categories);
+    }
+
+    protected function removeTempFile($path)
+    {
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
+        return $this;
+    }
+
+    private function assertFileStartsWith($prefix, $outputPath)
+    {
+        $this->assertStringStartsWith(
+            $prefix,
+            file_get_contents($outputPath),
+            "Failed asserting that the file '$outputPath' starts with '$prefix'"
+        );
+
+        return $this;
+    }
+
+    public function fileOutputDataProvider()
+    {
+        return [
+            ['/tmp/report.json', '{'],
+            ['/tmp/report.html', '<!--'],
+        ];
     }
 }

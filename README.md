@@ -8,7 +8,7 @@ Here's an example that will perform the default Lighthouse audits and store the 
 use Dzava\Lighthouse;
 
 (new Lighthouse())
-	->setOutput('report.json')
+    ->setOutput('report.json')
     ->accessibility()
 	->bestPractices()
     ->performance()
@@ -17,12 +17,30 @@ use Dzava\Lighthouse;
     ->audit('http://example.com');
 ```
 
+### Output
+
+The `setOutput` method accepts a second argument that can be used to specify the format (json,html).
+If the format argument is missing then the file extension will be used to determine the output format.
+If the file extension does not specify an accepted format, then json will be used.
+
+You can output both the json and html reports by passing an array as the second argument. For the example
+the following code will create two reports `example.report.html` and `example.report.json`.
+
+```php
+use Dzava\Lighthouse;
+
+(new Lighthouse())
+    ->setOutput('example', ['html', 'json'])
+    ->performance()
+    ->audit('http://example.com');
+```
+
 ### Using a custom config
 
 You can provide your own configuration file using the `withConfig` method.
 ```php
 (new Lighthouse())
-	->withConfig('./my-config.js')
+    ->withConfig('./my-config.js')
     ->audit('http://example.com');
 ```
 
@@ -32,7 +50,7 @@ If you need to manually set these paths, you can do this by calling the `setNode
 
 ```php
 (new Lighthouse())
-	->setNodeBinary('/usr/bin/node')
+    ->setNodeBinary('/usr/bin/node')
     ->setLighthousePath('./lighthouse.js')
     ->audit('http://example.com');
 ```
@@ -42,6 +60,6 @@ Use the `setChromeFlags` method to pass any flags to the Chrome instance.
 ```php
 (new Lighthouse())
 	// these are the default flags used
-	->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox'])
+    ->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox'])
     ->audit('http://example.com');
 ```

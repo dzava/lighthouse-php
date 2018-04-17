@@ -16,6 +16,9 @@ class Lighthouse
     protected $config = null;
     protected $categories = [];
     protected $options = [];
+    protected $outputFormat = '--output=json';
+    protected $availableFormats = ['json', 'html'];
+    protected $defaultFormat = 'json';
 
     public function __construct()
     {
@@ -144,11 +147,37 @@ class Lighthouse
 
     /**
      * @param string $path
+     * @param null|string|array $format
      * @return $this
      */
-    public function setOutput($path)
+    public function setOutput($path, $format = null)
     {
         $this->setOption('--output-path', $path);
+
+        if ($format === null) {
+            $format = $this->guessOutputFormatFromFile($path);
+        }
+
+        if (!is_array($format)) {
+            $format = [$format];
+        }
+
+        $format = array_intersect($this->availableFormats, $format);
+
+        $this->outputFormat = implode(' ', array_map(function ($format) {
+            return "--output=$format";
+        }, $format));
+
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     * @return $this
+     */
+    public function setDefaultFormat($format)
+    {
+        $this->defaultFormat = $format;
 
         return $this;
     }
@@ -261,8 +290,8 @@ class Lighthouse
             $this->chromePath,
             $this->nodePath,
             $this->lighthousePath,
+            $this->outputFormat,
             '--quiet',
-            '--output=json',
             "--config-path={$this->configPath}",
             $url,
         ], $this->processOptions());
@@ -303,5 +332,16 @@ class Lighthouse
         return array_map(function ($value, $option) {
             return is_numeric($option) ? $value : "$option=$value";
         }, $this->options, array_keys($this->options));
+    }
+
+    private function guessOutputFormatFromFile($path)
+    {
+        $format = pathinfo($path, PATHINFO_EXTENSION);
+
+        if (!in_array($format, $this->availableFormats)) {
+            $format = $this->defaultFormat;
+        }
+
+        return $format;
     }
 }

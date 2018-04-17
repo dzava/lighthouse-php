@@ -26,8 +26,8 @@ class LighthouseTest extends TestCase
 
         $this->assertEquals(implode(' ', [
             'lighthouse',
-            '--quiet',
             '--output=json',
+            '--quiet',
             "--config-path=/my/config",
             "http://example.com",
             "--chrome-flags='--headless --disable-gpu --no-sandbox'",
@@ -114,5 +114,49 @@ class LighthouseTest extends TestCase
         $command = $this->lighthouse->getCommand('http://example.com');
 
         $this->assertContains('--disable-network-throttling', $command);
+    }
+
+    /** @test */
+    public function it_can_guess_the_output_format_from_the_file_extension()
+    {
+        $this->lighthouse->setOutput('/tmp/report.json');
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=json", $command);
+        $this->assertNotContains("--output=html", $command);
+
+        $this->lighthouse->setOutput('/tmp/report.html');
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=html", $command);
+        $this->assertNotContains("--output=json", $command);
+
+        $this->lighthouse->setOutput('/tmp/report.md');
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=json", $command);
+        $this->assertNotContains("--output=html", $command);
+
+        $this->lighthouse->setOutput('/tmp/report');
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=json", $command);
+        $this->assertNotContains("--output=html", $command);
+    }
+
+    /** @test */
+    public function can_override_the_output_format()
+    {
+        $this->lighthouse->setOutput('/tmp/report.json', 'html');
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=html", $command);
+        $this->assertNotContains("--output=json", $command);
+
+        $this->lighthouse->setOutput('/tmp/report.md', ['html', 'json']);
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=html", $command);
+        $this->assertContains("--output=json", $command);
+
+        $this->lighthouse->setOutput('/tmp/report.md', ['html', 'json', 'md']);
+        $command = $this->lighthouse->getCommand('http://example.com');
+        $this->assertContains("--output=html", $command);
+        $this->assertContains("--output=json", $command);
+        $this->assertNotContains("--output=md", $command);
     }
 }
