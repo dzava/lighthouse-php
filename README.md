@@ -10,7 +10,7 @@ use Dzava\Lighthouse;
 (new Lighthouse())
     ->setOutput('report.json')
     ->accessibility()
-	->bestPractices()
+    ->bestPractices()
     ->performance()
     ->pwa()
     ->seo()
@@ -59,7 +59,7 @@ If you need to manually set these paths, you can do this by calling the `setNode
 Use the `setChromeFlags` method to pass any flags to the Chrome instance.
 ```php
 (new Lighthouse())
-	// these are the default flags used
+    // these are the default flags used
     ->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox'])
     ->audit('http://example.com');
 ```

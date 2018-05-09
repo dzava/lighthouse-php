@@ -4,17 +4,25 @@ namespace Dzava\Lighthouse\Exceptions;
 
 class AuditFailedException extends \Exception
 {
+    public $originalException;
+
     protected $output;
 
-    public function __construct($url, $output = null)
+    /**
+     * @param string $url
+     * @param string|\Exception $originalException
+     */
+    public function __construct($url, $originalException)
     {
-        parent::__construct("Audit of '{$url}' failed");
+        $error = "Audit of '$url' failed: ";
 
-        $this->output = $output;
-    }
+        if (is_object($originalException)) {
+            $this->originalException = $originalException;
+            $error .= $originalException->getMessage();
+        } else {
+            $error .= $originalException;
+        }
 
-    public function getOutput()
-    {
-        return $this->output;
+        parent::__construct($error);
     }
 }
