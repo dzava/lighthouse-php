@@ -46,15 +46,46 @@ class LighthouseTest extends TestCase
     }
 
     /** @test */
-    public function can_specify_audits_using_an_array()
+    public function updates_the_config_when_a_category_is_added_or_removed()
     {
         $report = $this->lighthouse
-            ->addCategory(['best-practices', 'performance', 'pwa'])
+            ->performance()
             ->audit('http://example.com');
 
-        $this->assertReportIncludesCategory($report, ['Best Practices', 'Performance', 'Progressive Web App']);
+        $this->assertReportIncludesCategory($report, 'Performance');
         $this->assertReportDoesNotIncludeCategory($report, 'Accessibility');
-        $this->assertReportDoesNotIncludeCategory($report, 'SEO');
+
+        $report = $this->lighthouse
+            ->accessibility()
+            ->audit('http://example.com');
+
+        $this->assertReportIncludesCategory($report, 'Performance');
+        $this->assertReportIncludesCategory($report, 'Accessibility');
+
+        $report = $this->lighthouse
+            ->accessibility(false)
+            ->audit('http://example.com');
+
+        $this->assertReportIncludesCategory($report, 'Performance');
+        $this->assertReportDoesNotIncludeCategory($report, 'Accessibility');
+    }
+
+    /** @test */
+    public function does_not_override_the_user_provided_config()
+    {
+        $config = $this->createLighthouseConfig('performance');
+        $configPath = stream_get_meta_data($config)['uri'];
+
+        $report = $this->lighthouse
+            ->withConfig($configPath)
+            ->accessibility()
+            ->performance(false)
+            ->audit('http://example.com');
+
+        file_put_contents('/tmp/report', $report);
+
+        $this->assertReportIncludesCategory($report, 'Performance');
+        $this->assertReportDoesNotIncludeCategory($report, 'Accessibility');
     }
 
     /** @test */
@@ -150,5 +181,25 @@ class LighthouseTest extends TestCase
             ['/tmp/report.json', '{'],
             ['/tmp/report.html', '<!--'],
         ];
+    }
+
+    private function createLighthouseConfig($categories)
+    {
+        if(!is_array($categories)) {
+            $categories = [$categories];
+        }
+
+        $config = tmpfile();
+
+        $r = 'module.exports = ' . json_encode([
+                'extends' => 'lighthouse:default',
+                'settings' => [
+                    'onlyCategories' => $categories,
+                ],
+            ]);
+
+        fwrite($config, $r);
+
+        return $config;
     }
 }

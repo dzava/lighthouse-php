@@ -52,11 +52,12 @@ class Lighthouse
     /**
      * Enable the accessibility audit
      *
+     * @param bool $enable
      * @return $this
      */
-    public function accessibility()
+    public function accessibility($enable = true)
     {
-        $this->addCategory('accessibility');
+        $this->setCategory('accessibility', $enable);
 
         return $this;
     }
@@ -64,11 +65,12 @@ class Lighthouse
     /**
      * Enable the best practices audit
      *
+     * @param bool $enable
      * @return $this
      */
-    public function bestPractices()
+    public function bestPractices($enable = true)
     {
-        $this->addCategory('best-practices');
+        $this->setCategory('best-practices', $enable);
 
         return $this;
     }
@@ -76,11 +78,12 @@ class Lighthouse
     /**
      * Enable the best performance audit
      *
+     * @param bool $enable
      * @return $this
      */
-    public function performance()
+    public function performance($enable = true)
     {
-        $this->addCategory('performance');
+        $this->setCategory('performance', $enable);
 
         return $this;
     }
@@ -88,11 +91,12 @@ class Lighthouse
     /**
      * Enable the progressive web app audit
      *
+     * @param bool $enable
      * @return $this
      */
-    public function pwa()
+    public function pwa($enable = true)
     {
-        $this->addCategory('pwa');
+        $this->setCategory('pwa', $enable);
 
         return $this;
     }
@@ -100,11 +104,12 @@ class Lighthouse
     /**
      * Enable the search engine optimization audit
      *
+     * @param bool $enable
      * @return $this
      */
-    public function seo()
+    public function seo($enable = true)
     {
-        $this->addCategory('seo');
+        $this->setCategory('seo', $enable);
 
         return $this;
     }
@@ -238,27 +243,6 @@ class Lighthouse
         return $this;
     }
 
-    /**
-     * Enable a category of audits to use
-     *
-     * @param $category
-     * @return $this
-     */
-    public function addCategory($category)
-    {
-        if (is_array($category)) {
-            array_walk($category, [$this, 'addCategory']);
-
-            return $this;
-        }
-
-        if (!in_array($category, $this->categories)) {
-            $this->categories[] = $category;
-        }
-
-        return $this;
-    }
-
     public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
@@ -290,7 +274,7 @@ class Lighthouse
 
     public function getCommand($url)
     {
-        if ($this->configPath === null) {
+        if ($this->configPath === null || $this->config !== null) {
             $this->buildConfig();
         }
 
@@ -305,6 +289,27 @@ class Lighthouse
         ], $this->processOptions());
 
         return escapeshellcmd(implode(' ', array_filter($command)));
+    }
+
+    /**
+     * Enable or disable a category
+     *
+     * @param $category
+     * @return $this
+     */
+    protected function setCategory($category, $enable)
+    {
+        $index = array_search($category, $this->categories);
+
+        if ($index !== false) {
+            if ($enable == false) {
+                unset($this->categories[$index]);
+            }
+        } elseif ($enable) {
+            $this->categories[] = $category;
+        }
+
+        return $this;
     }
 
     /**

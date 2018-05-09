@@ -159,4 +159,53 @@ class LighthouseTest extends TestCase
         $this->assertContains("--output=json", $command);
         $this->assertNotContains("--output=md", $command);
     }
+
+    /**
+     * @test
+     * @dataProvider reportCategoriesProvider
+     */
+    public function cannot_add_the_same_category_multiple_times($category, $method = null)
+    {
+        $method = $method ?? $category;
+        $lighthouse = new MockLighthouse();
+
+        $lighthouse->$method();
+        $lighthouse->$method();
+        $this->assertEquals(1, array_count_values($lighthouse->getCategories())[$category]);
+    }
+
+    /**
+     * @test
+     * @dataProvider reportCategoriesProvider
+     */
+    public function can_disable_a_category($category, $method = null)
+    {
+        $method = $method ?? $category;
+        $lighthouse = new MockLighthouse();
+
+        $lighthouse->$method();
+        $this->assertContains($category, $lighthouse->getCategories());
+
+        $lighthouse->$method(false);
+        $this->assertNotContains($category, $lighthouse->getCategories());
+    }
+
+    public function reportCategoriesProvider()
+    {
+        return [
+            ['accessibility'],
+            ['performance'],
+            ['best-practices', 'bestPractices'],
+            ['seo'],
+            ['pwa'],
+        ];
+    }
+}
+
+class MockLighthouse extends Lighthouse
+{
+    public function getCategories()
+    {
+        return $this->categories;
+    }
 }
