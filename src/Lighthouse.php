@@ -3,8 +3,6 @@
 namespace Dzava\Lighthouse;
 
 use Dzava\Lighthouse\Exceptions\AuditFailedException;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class Lighthouse
@@ -36,14 +34,10 @@ class Lighthouse
     {
         $process = new Process($this->getCommand($url));
 
-        try {
-            $process->setTimeout($this->timeout)->run();
-        } catch (ProcessFailedException|ProcessTimedOutException $e) {
-            throw new AuditFailedException($url, $e->getMessage());
-        }
+        $process->setTimeout($this->timeout)->run();
 
         if (!$process->isSuccessful()) {
-            throw new AuditFailedException($url, $process->getErrorOutput());
+            throw new AuditFailedException($url, $process->getOutput());
         }
 
         return $process->getOutput();
@@ -246,8 +240,6 @@ class Lighthouse
     public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
-
-        return $this;
     }
 
     /**
