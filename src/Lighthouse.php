@@ -19,6 +19,7 @@ class Lighthouse
     protected $outputFormat = '--output=json';
     protected $availableFormats = ['json', 'html'];
     protected $defaultFormat = 'json';
+    protected $headers;
 
     public function __construct()
     {
@@ -237,9 +238,21 @@ class Lighthouse
         return $this;
     }
 
+    public function setHeaders($headers)
+    {
+        $headers = json_encode($headers);
+        $headers = str_replace('"', '\"', $headers);
+
+        $this->headers = "--extra-headers \"$headers\"";
+
+        return $this;
+    }
+
     public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
+
+        return $this;
     }
 
     /**
@@ -275,12 +288,13 @@ class Lighthouse
             $this->nodePath,
             $this->lighthousePath,
             $this->outputFormat,
+            $this->headers,
             '--quiet',
             "--config-path={$this->configPath}",
             $url,
         ], $this->processOptions());
 
-        return escapeshellcmd(implode(' ', array_filter($command)));
+        return implode(' ', array_filter($command));
     }
 
     /**

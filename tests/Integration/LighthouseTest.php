@@ -129,6 +129,18 @@ class LighthouseTest extends TestCase
         $this->assertFileExists('/tmp/example.report.json');
     }
 
+    /** @test */
+    public function passes_the_http_headers_to_the_requests()
+    {
+        $report = $this->lighthouse
+            ->setHeaders(['Cookie' => 'monster:blue', 'Authorization' => 'Bearer: ring'])
+            ->performance()
+            ->audit('http://example.com');
+
+        $this->assertReportContainsHeader($report, 'Cookie', 'monster:blue');
+        $this->assertReportContainsHeader($report, 'Authorization', 'Bearer: ring');
+    }
+
     protected function assertReportIncludesCategory($report, $expectedCategory)
     {
         $report = json_decode($report, true);
@@ -153,6 +165,16 @@ class LighthouseTest extends TestCase
         }, $report['reportCategories']);
 
         $this->assertNotContains($expectedCategory, $categories);
+    }
+
+    protected function assertReportContainsHeader($report, $name, $value)
+    {
+        $report = json_decode($report, true);
+
+        $headers = $report['runtimeConfig']['extraHeaders'];
+        $this->assertNotNull($headers, 'No extra headers found in report');
+        $this->assertArrayHasKey($name, $headers, "Header '$name' is missing from report. [" . implode($headers, ', ') . ']');
+        $this->assertEquals($value, $headers[$name]);
     }
 
     protected function removeTempFile($path)
@@ -185,7 +207,7 @@ class LighthouseTest extends TestCase
 
     private function createLighthouseConfig($categories)
     {
-        if(!is_array($categories)) {
+        if (!is_array($categories)) {
             $categories = [$categories];
         }
 

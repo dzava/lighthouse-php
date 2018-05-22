@@ -190,6 +190,19 @@ class LighthouseTest extends TestCase
         $this->assertNotContains($category, $lighthouse->getCategories());
     }
 
+    /** @test */
+    public function can_set_the_headers_using_an_array()
+    {
+        $lighthouse = new MockLighthouse();
+
+        $lighthouse->setHeaders([
+            'Cookie' => 'monster=blue',
+            'Authorization' => 'Bearer: ring',
+        ]);
+
+        $this->assertContains('--extra-headers "{\"Cookie\":\"monster=blue\",\"Authorization\":\"Bearer: ring\"}"', $lighthouse->getCommand(''));
+    }
+
     public function reportCategoriesProvider()
     {
         return [
