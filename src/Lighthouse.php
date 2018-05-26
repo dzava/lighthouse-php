@@ -240,6 +240,13 @@ class Lighthouse
 
     public function setHeaders($headers)
     {
+
+        if (empty($headers)) {
+            $this->headers = '';
+
+            return $this;
+        }
+
         $headers = json_encode($headers);
         $headers = str_replace('"', '\"', $headers);
 

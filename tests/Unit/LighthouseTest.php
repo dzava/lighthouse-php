@@ -203,6 +203,21 @@ class LighthouseTest extends TestCase
         $this->assertContains('--extra-headers "{\"Cookie\":\"monster=blue\",\"Authorization\":\"Bearer: ring\"}"', $lighthouse->getCommand(''));
     }
 
+    /**
+     * @test
+     * @dataProvider emptyHeadersProvider
+     */
+    public function does_not_pass_headers_when_empty()
+    {
+        $lighthouse = new MockLighthouse();
+
+        $lighthouse->setHeaders(['Cookie' => 'monster=blue']);
+        $this->assertContains('--extra-headers', $lighthouse->getCommand(''));
+
+        $lighthouse->setHeaders([]);
+        $this->assertNotContains('--extra-headers', $lighthouse->getCommand(''));
+    }
+
     public function reportCategoriesProvider()
     {
         return [
@@ -211,6 +226,15 @@ class LighthouseTest extends TestCase
             ['best-practices', 'bestPractices'],
             ['seo'],
             ['pwa'],
+        ];
+    }
+
+    public function emptyHeadersProvider()
+    {
+        return [
+            [null],
+            [false],
+            [[]],
         ];
     }
 }
