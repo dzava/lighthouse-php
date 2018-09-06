@@ -5,7 +5,7 @@ This package provide a php interface for [Google Lighthouse](https://github.com/
 Here's an example that will perform the default Lighthouse audits and store the result in `report.json` (You can use the [Lighthouse Viewer](https://googlechrome.github.io/lighthouse/viewer/) to open the report):
 
 ```php
-use Dzava\Lighthouse;
+use Dzava\Lighthouse\Lighthouse;
 
 (new Lighthouse())
     ->setOutput('report.json')
@@ -27,7 +27,7 @@ You can output both the json and html reports by passing an array as the second 
 the following code will create two reports `example.report.html` and `example.report.json`.
 
 ```php
-use Dzava\Lighthouse;
+use Dzava\Lighthouse\Lighthouse;
 
 (new Lighthouse())
     ->setOutput('example', ['html', 'json'])
@@ -39,6 +39,8 @@ use Dzava\Lighthouse;
 
 You can provide your own configuration file using the `withConfig` method.
 ```php
+use Dzava\Lighthouse\Lighthouse;
+
 (new Lighthouse())
     ->withConfig('./my-config.js')
     ->audit('http://example.com');
@@ -49,6 +51,8 @@ You can provide your own configuration file using the `withConfig` method.
 If you need to manually set these paths, you can do this by calling the `setNodeBinary` and `setLighthousePath` methods.
 
 ```php
+use Dzava\Lighthouse\Lighthouse;
+
 (new Lighthouse())
     ->setNodeBinary('/usr/bin/node')
     ->setLighthousePath('./lighthouse.js')
@@ -58,6 +62,8 @@ If you need to manually set these paths, you can do this by calling the `setNode
 ### Passing flags to Chrome
 Use the `setChromeFlags` method to pass any flags to the Chrome instance.
 ```php
+use Dzava\Lighthouse\Lighthouse;
+
 (new Lighthouse())
     // these are the default flags used
     ->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox'])
