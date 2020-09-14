@@ -2,16 +2,17 @@
 
 namespace Dzava\Lighthouse\Tests\Integration;
 
+use DMS\PHPUnitExtensions\ArraySubset\Assert;
 use Dzava\Lighthouse\Exceptions\AuditFailedException;
 use Dzava\Lighthouse\Lighthouse;
 use PHPUnit\Framework\TestCase;
 
-class LighthouseTest extends TestCase
+class IntegrationTest extends TestCase
 {
     /** @var Lighthouse $lighthouse */
     protected $lighthouse;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -145,13 +146,13 @@ class LighthouseTest extends TestCase
     {
         $report = json_decode($report, true);
         $categories = array_map(function ($category) {
-            return $category['name'];
-        }, $report['reportCategories']);
+            return $category['title'];
+        }, $report['categories']);
 
         if (is_array($expectedCategory)) {
             sort($expectedCategory);
             sort($categories);
-            $this->assertArraySubset($expectedCategory, $categories);
+            Assert::assertArraySubset($expectedCategory, $categories);
         } else {
             $this->assertContains($expectedCategory, $categories);
         }
@@ -161,8 +162,8 @@ class LighthouseTest extends TestCase
     {
         $report = json_decode($report, true);
         $categories = array_map(function ($category) {
-            return $category['name'];
-        }, $report['reportCategories']);
+            return $category['title'];
+        }, $report['categories']);
 
         $this->assertNotContains($expectedCategory, $categories);
     }
@@ -171,7 +172,7 @@ class LighthouseTest extends TestCase
     {
         $report = json_decode($report, true);
 
-        $headers = $report['runtimeConfig']['extraHeaders'];
+        $headers = $report['configSettings']['extraHeaders'];
         $this->assertNotNull($headers, 'No extra headers found in report');
         $this->assertArrayHasKey($name, $headers, "Header '$name' is missing from report. [" . implode($headers, ', ') . ']');
         $this->assertEquals($value, $headers[$name]);
@@ -200,8 +201,8 @@ class LighthouseTest extends TestCase
     public function fileOutputDataProvider()
     {
         return [
-            ['/tmp/report.json', '{'],
-            ['/tmp/report.html', '<!--'],
+            'json' => ['/tmp/report.json', '{'],
+            'html' => ['/tmp/report.html', '<!--'],
         ];
     }
 

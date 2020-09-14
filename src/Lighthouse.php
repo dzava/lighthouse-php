@@ -16,10 +16,10 @@ class Lighthouse
     protected $config = null;
     protected $categories = [];
     protected $options = [];
-    protected $outputFormat = '--output=json';
+    protected $outputFormat = ['--output=json'];
     protected $availableFormats = ['json', 'html'];
     protected $defaultFormat = 'json';
-    protected $headers;
+    protected $headers = [];
 
     public function __construct()
     {
@@ -170,9 +170,9 @@ class Lighthouse
 
         $format = array_intersect($this->availableFormats, $format);
 
-        $this->outputFormat = implode(' ', array_map(function ($format) {
+        $this->outputFormat = array_map(function ($format) {
             return "--output=$format";
-        }, $format));
+        }, $format);
 
         return $this;
     }
@@ -242,15 +242,14 @@ class Lighthouse
     {
 
         if (empty($headers)) {
-            $this->headers = '';
+            $this->headers = [];
 
             return $this;
         }
 
         $headers = json_encode($headers);
-        $headers = str_replace('"', '\"', $headers);
 
-        $this->headers = "--extra-headers \"$headers\"";
+        $this->headers = ["--extra-headers", $headers];
 
         return $this;
     }
@@ -294,14 +293,14 @@ class Lighthouse
             $this->chromePath,
             $this->nodePath,
             $this->lighthousePath,
-            $this->outputFormat,
-            $this->headers,
+            ...$this->outputFormat,
+            ...$this->headers,
             '--quiet',
             "--config-path={$this->configPath}",
             $url,
         ], $this->processOptions());
 
-        return implode(' ', array_filter($command));
+        return array_filter($command);
     }
 
     /**
