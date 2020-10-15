@@ -77,16 +77,6 @@ class UnitTest extends TestCase
     }
 
     /** @test */
-    public function can_set_chrome_path()
-    {
-        $this->lighthouse->setChromePath('/chrome');
-
-        $command = $this->lighthouse->getCommand('http://example.com');
-
-        $this->assertStringContainsStringIgnoringCase("CHROME_PATH=/chrome", $command);
-    }
-
-    /** @test */
     public function can_set_the_output_file()
     {
         $this->lighthouse->setOutput('/tmp/report.json');

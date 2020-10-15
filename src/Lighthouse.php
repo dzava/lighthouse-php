@@ -9,7 +9,7 @@ class Lighthouse
 {
     protected $timeout = 60;
     protected $nodePath = null;
-    protected $chromePath = null;
+    protected $environmentVariables = [];
     protected $lighthousePath = 'lighthouse';
     protected $configPath = null;
     /** @var resource $config */
@@ -35,7 +35,7 @@ class Lighthouse
     {
         $process = new Process($this->getCommand($url));
 
-        $process->setTimeout($this->timeout)->run();
+        $process->setTimeout($this->timeout)->run(null, $this->environmentVariables);
 
         if (!$process->isSuccessful()) {
             throw new AuditFailedException($url, $process->getErrorOutput());
@@ -216,7 +216,7 @@ class Lighthouse
      */
     public function setChromePath($path)
     {
-        $this->chromePath = "CHROME_PATH=$path";
+        $this->environmentVariables['CHROME_PATH'] = $path;
 
         return $this;
     }
@@ -290,7 +290,6 @@ class Lighthouse
         }
 
         $command = array_merge([
-            $this->chromePath,
             $this->nodePath,
             $this->lighthousePath,
             ...$this->outputFormat,
