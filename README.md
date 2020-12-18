@@ -2,6 +2,32 @@
 
 This package provide a php interface for [Google Lighthouse](https://github.com/GoogleChrome/lighthouse).
 
+## Installation
+
+You can install the package via composer:
+
+Add the following to your `composer.json` and run `composer update`.
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dzava/lighthouse-php"
+        }
+    ],
+    "require": {
+        "dzava/lighthouse": "dev-master",
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
+```
+
+Install Lighthouse `yarn add lighthouse`.
+
+## Usage
+
 Here's an example that will perform the default Lighthouse audits and store the result in `report.json` (You can use the [Lighthouse Viewer](https://googlechrome.github.io/lighthouse/viewer/) to open the report):
 
 ```php
@@ -55,7 +81,7 @@ use Dzava\Lighthouse\Lighthouse;
 
 (new Lighthouse())
     ->setNodeBinary('/usr/bin/node')
-    ->setLighthousePath('./lighthouse.js')
+    ->setLighthousePath('./node_modules/lighthouse/lighthouse-cli/index.js')
     ->audit('http://example.com');
 ```
 
@@ -68,4 +94,25 @@ use Dzava\Lighthouse\Lighthouse;
     // these are the default flags used
     ->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox'])
     ->audit('http://example.com');
+```
+
+## Troubleshooting
+
+#### Audit of 'url' failed
+Use the following snippet to check why the audit fails.
+
+```php
+require "./vendor/autoload.php";
+
+use Dzava\Lighthouse\Exceptions\AuditFailedException;
+use Dzava\Lighthouse\Lighthouse;
+
+
+try {
+(new Lighthouse())
+    ->performance()
+    ->audit('http://example.com');
+} catch(AuditFailedException $e) {
+    echo $e->getOutput();
+}
 ```
