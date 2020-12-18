@@ -10,7 +10,7 @@ class Lighthouse
     protected $timeout = 60;
     protected $nodePath = null;
     protected $environmentVariables = [];
-    protected $lighthousePath = 'lighthouse';
+    protected $lighthousePath = './node_modules/lighthouse/lighthouse-cli/index.js';
     protected $configPath = null;
     /** @var resource $config */
     protected $config = null;

@@ -25,6 +25,8 @@ class UnitTest extends TestCase
                 return $this->categories;
             }
         };
+
+        $this->lighthouse->setLighthousePath('lighthouse');
     }
 
     /** @test */
