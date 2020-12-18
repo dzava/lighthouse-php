@@ -110,32 +110,6 @@ class Lighthouse
     }
 
     /**
-     * Disable Nexus 5X emulation
-     *
-     * @return $this
-     */
-    public function disableDeviceEmulation()
-    {
-        $this->setOption('--disable-device-emulation');
-
-        return $this;
-    }
-
-    public function disableCpuThrottling()
-    {
-        $this->setOption('--disable-cpu-throttling');
-
-        return $this;
-    }
-
-    public function disableNetworkThrottling()
-    {
-        $this->setOption('--disable-network-throttling');
-
-        return $this;
-    }
-
-    /**
      * @param string $path
      * @return $this
      */
@@ -238,9 +212,12 @@ class Lighthouse
         return $this;
     }
 
+    /**
+     * @param array $headers
+     * @return $this
+     */
     public function setHeaders($headers)
     {
-
         if (empty($headers)) {
             $this->headers = [];
 
@@ -254,6 +231,10 @@ class Lighthouse
         return $this;
     }
 
+    /**
+     * @param int $timeout
+     * @return $this
+     */
     public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
@@ -358,6 +339,10 @@ class Lighthouse
         }, $this->options, array_keys($this->options));
     }
 
+    /**
+     * @param $path
+     * @return string
+     */
     private function guessOutputFormatFromFile($path)
     {
         $format = pathinfo($path, PATHINFO_EXTENSION);

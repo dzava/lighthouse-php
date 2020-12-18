@@ -89,36 +89,6 @@ class UnitTest extends TestCase
     }
 
     /** @test */
-    public function can_disable_device_emulation()
-    {
-        $this->lighthouse->disableDeviceEmulation();
-
-        $command = $this->lighthouse->getCommand('http://example.com');
-
-        $this->assertStringContainsStringIgnoringCase('--disable-device-emulation', $command);
-    }
-
-    /** @test */
-    public function can_disable_cpu_throttling()
-    {
-        $this->lighthouse->disableCpuThrottling();
-
-        $command = $this->lighthouse->getCommand('http://example.com');
-
-        $this->assertStringContainsStringIgnoringCase('--disable-cpu-throttling', $command);
-    }
-
-    /** @test */
-    public function can_disable_network_throttling()
-    {
-        $this->lighthouse->disableNetworkThrottling();
-
-        $command = $this->lighthouse->getCommand('http://example.com');
-
-        $this->assertStringContainsStringIgnoringCase('--disable-network-throttling', $command);
-    }
-
-    /** @test */
     public function it_can_guess_the_output_format_from_the_file_extension()
     {
         $this->lighthouse->setOutput('/tmp/report.json');
