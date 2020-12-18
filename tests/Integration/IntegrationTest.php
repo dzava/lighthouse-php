@@ -95,7 +95,7 @@ class IntegrationTest extends TestCase
         $this->expectException(AuditFailedException::class);
 
         $this->lighthouse
-            ->seo()
+            ->performance()
             ->audit('not-a-valid-url');
     }
 
@@ -109,7 +109,7 @@ class IntegrationTest extends TestCase
 
         $this->lighthouse
             ->setOutput($outputPath)
-            ->seo()
+            ->performance()
             ->audit('http://example.com');
 
         $this->assertFileExists($outputPath);
@@ -123,7 +123,7 @@ class IntegrationTest extends TestCase
 
         $this->lighthouse
             ->setOutput('/tmp/example', ['json', 'html'])
-            ->seo()
+            ->performance()
             ->audit('http://example.com');
 
         $this->assertFileExists('/tmp/example.report.html');
@@ -224,5 +224,22 @@ class IntegrationTest extends TestCase
         fwrite($config, $r);
 
         return $config;
+    }
+
+    private function array_get($array, $key, $default = null)
+    {
+        if (is_null($key)) return $array;
+
+        if (isset($array[$key])) return $array[$key];
+
+        foreach (explode('.', $key) as $segment) {
+            if (!is_array($array) || !array_key_exists($segment, $array)) {
+                return $default;
+            }
+
+            $array = $array[$segment];
+        }
+
+        return $array;
     }
 }
