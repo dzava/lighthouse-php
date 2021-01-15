@@ -152,6 +152,36 @@ class Lighthouse
     }
 
     /**
+     * @param bool|mixed $value
+     * @param callable $callback
+     * @param callable|null $default
+     * @return $this|mixed
+     */
+    public function when($value, callable $callback, callable $default = null)
+    {
+        if ($value) {
+            return $callback($this, $value);
+        }
+
+        if ($default) {
+            return $default($this, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param bool|mixed $value
+     * @param callable $callback
+     * @param callable|null $default
+     * @return $this|mixed
+     */
+    public function unless($value, callable $callback, callable $default = null)
+    {
+        return $this->when(!$value, $callback, $default);
+    }
+
+    /**
      * @param string $format
      * @return $this
      */
