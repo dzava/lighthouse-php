@@ -16,7 +16,9 @@ class IntegrationTest extends TestCase
     {
         parent::setUp();
 
-        $this->lighthouse = (new Lighthouse())->setLighthousePath('./node_modules/lighthouse/lighthouse-cli/index.js');
+        $this->lighthouse = (new Lighthouse())
+            ->setChromePath('/usr/bin/google-chrome-stable')
+            ->setLighthousePath('./node_modules/lighthouse/lighthouse-cli/index.js');
     }
 
     /** @test */
@@ -39,6 +41,17 @@ class IntegrationTest extends TestCase
             ->performance()
             ->pwa()
             ->seo()
+            ->audit('http://example.com');
+
+        $this->assertReportIncludesCategory($report, [
+            'Accessibility', 'Best Practices', 'Performance', 'Progressive Web App', 'SEO',
+        ]);
+    }
+
+    /** @test */
+    public function runs_all_audits_by_default()
+    {
+        $report = $this->lighthouse
             ->audit('http://example.com');
 
         $this->assertReportIncludesCategory($report, [
@@ -72,7 +85,7 @@ class IntegrationTest extends TestCase
     }
 
     /** @test */
-    public function does_not_override_the_user_provided_config()
+    public function categories_override_config()
     {
         $config = $this->createLighthouseConfig('performance');
         $configPath = stream_get_meta_data($config)['uri'];
@@ -85,8 +98,8 @@ class IntegrationTest extends TestCase
 
         file_put_contents('/tmp/report', $report);
 
-        $this->assertReportIncludesCategory($report, 'Performance');
-        $this->assertReportDoesNotIncludeCategory($report, 'Accessibility');
+        $this->assertReportIncludesCategory($report, 'Accessibility');
+        $this->assertReportDoesNotIncludeCategory($report, 'Performance');
     }
 
     /** @test */
@@ -142,6 +155,22 @@ class IntegrationTest extends TestCase
         $this->assertReportContainsHeader($report, 'Authorization', 'Bearer: ring');
     }
 
+    /** @test */
+    public function accepts_an_array_with_the_config()
+    {
+        $report = $this->lighthouse
+            ->withConfig([
+                'extends' => 'lighthouse:default',
+                'settings' => [
+                    'onlyCategories' => ['pwa'],
+                ],
+            ])
+            ->audit('http://example.com');
+
+        $this->assertReportIncludesCategory($report, 'Progressive Web App');
+        $this->assertReportDoesNotIncludeCategory($report, 'Performance');
+    }
+
     protected function assertReportIncludesCategory($report, $expectedCategory)
     {
         $report = json_decode($report, true);
@@ -173,8 +202,8 @@ class IntegrationTest extends TestCase
         $report = json_decode($report, true);
 
         $headers = $report['configSettings']['extraHeaders'];
-        $this->assertNotNull($headers, 'No extra headers found in report');
-        $this->assertArrayHasKey($name, $headers, "Header '$name' is missing from report. [" . implode($headers, ', ') . ']');
+        $this->assertNotEmpty($headers, 'No extra headers found in report');
+        $this->assertArrayHasKey($name, $headers, "Header '$name' is missing from report. [" . implode(', ', $headers) . ']');
         $this->assertEquals($value, $headers[$name]);
     }
 

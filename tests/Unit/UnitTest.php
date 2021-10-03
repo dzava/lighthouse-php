@@ -32,7 +32,40 @@ class UnitTest extends TestCase
     /** @test */
     public function it_constructs_the_correct_command()
     {
+        /* Only categories */
         $command = $this->lighthouse
+            ->accessibility()
+            ->pwa()
+            ->getCommand('http://example.com');
+
+        $this->assertEquals(implode(' ', [
+            'lighthouse',
+            '--output=json',
+            '--quiet',
+            "--only-categories=accessibility,pwa",
+            "http://example.com",
+            "--chrome-flags='--headless --disable-gpu --no-sandbox'",
+        ]), $command);
+
+        /* Categories and config */
+        $command = $this->lighthouse
+            ->withConfig('/my/config')
+            ->getCommand('http://example.com');
+
+        $this->assertEquals(implode(' ', [
+            'lighthouse',
+            '--output=json',
+            '--quiet',
+            "--only-categories=accessibility,pwa",
+            "--config-path=/my/config",
+            "http://example.com",
+            "--chrome-flags='--headless --disable-gpu --no-sandbox'",
+        ]), $command);
+
+        /* Config only */
+        $command = $this->lighthouse
+            ->accessibility(false)
+            ->pwa(false)
             ->withConfig('/my/config')
             ->getCommand('http://example.com');
 
@@ -182,6 +215,16 @@ class UnitTest extends TestCase
 
         $this->lighthouse->setHeaders([]);
         $this->assertStringNotContainsStringIgnoringCase('--extra-headers', $this->lighthouse->getCommand(''));
+    }
+
+    /** @test */
+    public function config_can_be_an_array()
+    {
+        $this->lighthouse
+            ->withConfig(['extends' => 'lighthouse:default']);
+
+        $this->assertStringContainsStringIgnoringCase('--config-path', $this->lighthouse->getCommand(''));
+        $this->assertStringNotContainsStringIgnoringCase('--only-categories', $this->lighthouse->getCommand(''));
     }
 
     public function reportCategoriesProvider()

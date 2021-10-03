@@ -17,7 +17,7 @@ Add the following to your `composer.json` and run `composer update`.
         }
     ],
     "require": {
-        "dzava/lighthouse": "dev-master",
+        "dzava/lighthouse": "dev-master"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
@@ -71,6 +71,23 @@ use Dzava\Lighthouse\Lighthouse;
     ->withConfig('./my-config.js')
     ->audit('http://example.com');
 ```
+
+You can also pass a php array to the `withConfig` method containing your configuration.
+```php
+use Dzava\Lighthouse\Lighthouse;
+
+(new Lighthouse())
+    ->withConfig([
+         'extends' => 'lighthouse:default',
+         'settings' => [
+             'onlyCategories' => ['accessibility'],
+         ],
+     ])
+    ->audit('http://example.com');
+```
+**Note:** in order to use an array to specify the configuration options, php needs to be able to [create and move](https://www.php.net/manual/en/function.tmpfile.php) temporary files.
+
+Details about the configuration options can be found [here](https://github.com/GoogleChrome/lighthouse/blob/master/docs/configuration.md)
 
 ### Customizing node and Lighthouse paths
 

@@ -12,8 +12,6 @@ class Lighthouse
     protected $environmentVariables = [];
     protected $lighthousePath = './node_modules/lighthouse/lighthouse-cli/index.js';
     protected $configPath = null;
-    /** @var resource $config */
-    protected $config = null;
     protected $categories = [];
     protected $options = [];
     protected $outputFormat = ['--output=json'];
@@ -24,6 +22,11 @@ class Lighthouse
     public function __construct()
     {
         $this->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox']);
+    }
+
+    public function __destruct()
+    {
+        $this->cleanupConfig();
     }
 
     /**
@@ -110,17 +113,20 @@ class Lighthouse
     }
 
     /**
-     * @param string $path
+     * Set the lighthouse config to use
+     *
+     * @param string|array $path
      * @return $this
      */
     public function withConfig($path)
     {
-        if ($this->config) {
-            fclose($this->config);
-        }
+        $this->cleanupConfig();
 
-        $this->configPath = $path;
-        $this->config = null;
+        if (is_array($path)) {
+            $this->configPath = $this->buildConfig($path);
+        } else {
+            $this->configPath = $path;
+        }
 
         return $this;
     }
@@ -296,17 +302,14 @@ class Lighthouse
 
     public function getCommand($url)
     {
-        if ($this->configPath === null || $this->config !== null) {
-            $this->buildConfig();
-        }
-
         $command = array_merge([
             $this->nodePath,
             $this->lighthousePath,
             ...$this->outputFormat,
             ...$this->headers,
             '--quiet',
-            "--config-path={$this->configPath}",
+            empty($this->categories) ? null : '--only-categories=' . implode(',', $this->categories),
+            empty($this->configPath) ? '' : "--config-path={$this->configPath}",
             $url,
         ], $this->processOptions());
 
@@ -337,23 +340,18 @@ class Lighthouse
     /**
      * Creates the config file used during the audit
      *
-     * @return $this
+     * @param array $data
+     * @return string The path of the config file
      */
-    protected function buildConfig()
+    protected function buildConfig($data)
     {
         $config = tmpfile();
-        $this->withConfig(stream_get_meta_data($config)['uri']);
-        $this->config = $config;
-
-        $r = 'module.exports = ' . json_encode([
-                'extends' => 'lighthouse:default',
-                'settings' => [
-                    'onlyCategories' => $this->categories,
-                ],
-            ]);
+        $path = stream_get_meta_data($config)['uri'];
+        rename($path, $path = "$path.js");
+        $r = 'module.exports = ' . json_encode($data);
         fwrite($config, $r);
 
-        return $this;
+        return $path;
     }
 
     /**
@@ -373,7 +371,7 @@ class Lighthouse
      * @param $path
      * @return string
      */
-    private function guessOutputFormatFromFile($path)
+    protected function guessOutputFormatFromFile($path)
     {
         $format = pathinfo($path, PATHINFO_EXTENSION);
 
@@ -382,5 +380,16 @@ class Lighthouse
         }
 
         return $format;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function cleanupConfig() {
+        if($this->configPath && file_exists($this->configPath)) {
+            unlink($this->configPath);
+        }
+
+        return $this;
     }
 }
