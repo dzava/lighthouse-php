@@ -4,25 +4,7 @@ This package provide a php interface for [Google Lighthouse](https://github.com/
 
 ## Installation
 
-You can install the package via composer:
-
-Add the following to your `composer.json` and run `composer update`.
-
-```json
-{
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/dzava/lighthouse-php"
-        }
-    ],
-    "require": {
-        "dzava/lighthouse": "dev-master"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
-}
-```
+You can install the package via composer: `composer require dzava/lighthouse`
 
 Install Lighthouse `yarn add lighthouse`. Last tested with Lighthouse v8.5.1.
 
