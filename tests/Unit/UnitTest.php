@@ -40,10 +40,10 @@ class UnitTest extends TestCase
 
         $this->assertEquals(implode(' ', [
             'lighthouse',
+            "http://example.com",
             '--output=json',
             '--quiet',
             "--only-categories=accessibility,pwa",
-            "http://example.com",
             "--chrome-flags='--headless --disable-gpu --no-sandbox'",
         ]), $command);
 
@@ -54,11 +54,11 @@ class UnitTest extends TestCase
 
         $this->assertEquals(implode(' ', [
             'lighthouse',
+            "http://example.com",
             '--output=json',
             '--quiet',
             "--only-categories=accessibility,pwa",
             "--config-path=/my/config",
-            "http://example.com",
             "--chrome-flags='--headless --disable-gpu --no-sandbox'",
         ]), $command);
 
@@ -71,10 +71,10 @@ class UnitTest extends TestCase
 
         $this->assertEquals(implode(' ', [
             'lighthouse',
+            "http://example.com",
             '--output=json',
             '--quiet',
             "--config-path=/my/config",
-            "http://example.com",
             "--chrome-flags='--headless --disable-gpu --no-sandbox'",
         ]), $command);
     }

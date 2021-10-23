@@ -309,12 +309,12 @@ class Lighthouse
         $command = array_merge([
             $this->nodePath,
             $this->lighthousePath,
+            $url,
             ...$this->outputFormat,
             ...$this->headers,
             '--quiet',
             empty($this->categories) ? null : '--only-categories=' . implode(',', $this->categories),
             empty($this->configPath) ? '' : "--config-path={$this->configPath}",
-            $url,
         ], $this->processOptions());
 
         return array_filter($command);

@@ -24,7 +24,7 @@ Add the following to your `composer.json` and run `composer update`.
 }
 ```
 
-Install Lighthouse `yarn add lighthouse`.
+Install Lighthouse `yarn add lighthouse`. Last tested with Lighthouse v8.5.1.
 
 ## Usage
 
