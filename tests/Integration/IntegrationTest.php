@@ -171,6 +171,27 @@ class IntegrationTest extends TestCase
         $this->assertReportDoesNotIncludeCategory($report, 'Performance');
     }
 
+    /** @test */
+    public function does_not_remove_the_provided_config_file()
+    {
+        $configPath = '/tmp/test-config.js';
+
+        file_put_contents($configPath, 'module.exports = ' . json_encode([
+                'extends' => 'lighthouse:default',
+                'settings' => [
+                    'onlyCategories' => ['performance'],
+                ],
+            ]));
+
+        $this->lighthouse
+            ->withConfig($configPath)
+            ->audit('http://example.com');
+
+        $this->lighthouse = null;
+
+        $this->assertFileExists($configPath);
+    }
+
     protected function assertReportIncludesCategory($report, $expectedCategory)
     {
         $report = json_decode($report, true);

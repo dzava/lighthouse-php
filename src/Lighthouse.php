@@ -12,6 +12,8 @@ class Lighthouse
     protected $environmentVariables = [];
     protected $lighthousePath = './node_modules/lighthouse/lighthouse-cli/index.js';
     protected $configPath = null;
+    /** @var $shouldCleanupConfig bool */
+    protected $shouldCleanupConfig = false;
     protected $categories = [];
     protected $options = [];
     protected $outputFormat = ['--output=json'];
@@ -124,8 +126,10 @@ class Lighthouse
 
         if (is_array($path)) {
             $this->configPath = $this->buildConfig($path);
+            $this->shouldCleanupConfig = true;
         } else {
             $this->configPath = $path;
+            $this->shouldCleanupConfig = false;
         }
 
         return $this;
@@ -385,8 +389,9 @@ class Lighthouse
     /**
      * @return $this
      */
-    protected function cleanupConfig() {
-        if($this->configPath && file_exists($this->configPath)) {
+    protected function cleanupConfig()
+    {
+        if ($this->shouldCleanupConfig && $this->configPath && file_exists($this->configPath)) {
             unlink($this->configPath);
         }
 
