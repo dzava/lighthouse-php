@@ -88,13 +88,16 @@ class IntegrationTest extends TestCase
     public function categories_override_config()
     {
         $config = $this->createLighthouseConfig('performance');
-        $configPath = stream_get_meta_data($config)['uri'];
 
-        $report = $this->lighthouse
-            ->withConfig($configPath)
-            ->accessibility()
-            ->performance(false)
-            ->audit('http://example.com');
+        try {
+            $report = $this->lighthouse
+                ->withConfig($config)
+                ->accessibility()
+                ->performance(false)
+                ->audit('http://example.com');
+        } catch (AuditFailedException $e) {
+            echo $e->getOutput();
+        }
 
         file_put_contents('/tmp/report', $report);
 
@@ -262,17 +265,11 @@ class IntegrationTest extends TestCase
             $categories = [$categories];
         }
 
-        $config = tmpfile();
-
-        $r = 'module.exports = ' . json_encode([
-                'extends' => 'lighthouse:default',
-                'settings' => [
-                    'onlyCategories' => $categories,
-                ],
-            ]);
-
-        fwrite($config, $r);
-
-        return $config;
+        return [
+            'extends' => 'lighthouse:default',
+            'settings' => [
+                'onlyCategories' => $categories,
+            ],
+        ];
     }
 }
